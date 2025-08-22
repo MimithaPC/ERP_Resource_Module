@@ -146,7 +146,7 @@ const Items: React.FC = () => {
                         value={searchValue}
                         onChange={(e) => {
                             setSearchValue(e.target.value);
-                            setCurrentPage(1); // reset page on search
+                            setCurrentPage(1); 
                         }}
                     />
                 </div>

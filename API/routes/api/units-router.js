@@ -14,7 +14,7 @@ router.get("/", async (req, res) => {
     let client;
     try {
         client = await db_pool.connect();
-        const result = await client.query('SELECT * from cerpschema.units');
+        const result = await client.query('SELECT * from resources.units');
         console.log("units:", result.rows[0]);
         res.json(result.rows);
     } catch (err) {
@@ -31,7 +31,7 @@ router.get("/:aid", async (req, res) => {
     try {
         client = await db_pool.connect();
         const result = await client.query(
-            'SELECT * from cerpschema.units where unit_id  = $1', 
+            'SELECT * from resources.units where unit_id  = $1', 
             [req.params.aid]
         );
         console.log("units:", result.rows[0]);
@@ -51,7 +51,7 @@ router.post("/", async (req, res) => {
         client = await db_pool.connect();  
         const { unit_name , unit_symbol, created_by, updated_by, created_at, updated_at } = req.body; 
         const result = await client.query(
-            'INSERT INTO cerpschema.units (unit_name , unit_symbol, created_by, updated_by, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+            'INSERT INTO resources.units (unit_name , unit_symbol, created_by, updated_by, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
             [unit_name , unit_symbol, created_by, updated_by, created_at, updated_at]
         );
         const newUnits = result.rows[0]; 
@@ -73,7 +73,7 @@ router.put("/:id", async (req, res) => {
         const { unit_name , unit_symbol , updated_by } = req.body;
         const updated_at = new Date().toISOString(); 
         const result = await client.query(
-            `UPDATE cerpschema.units SET unit_name = $1, unit_symbol = $2, updated_by = $3, updated_at = $4 WHERE unit_id = $5 RETURNING *`,
+            `UPDATE resources.units SET unit_name = $1, unit_symbol = $2, updated_by = $3, updated_at = $4 WHERE unit_id = $5 RETURNING *`,
             [ unit_name || null, unit_symbol || null, updated_by || null, updated_at, id ]
         );
         if (result.rows.length === 0) {
@@ -96,7 +96,7 @@ router.delete("/:id", async (req, res) => {
         client = await db_pool.connect();
         const { id } = req.params;
         const result = await client.query(
-            'DELETE FROM cerpschema.units WHERE unit_id = $1 RETURNING *',
+            'DELETE FROM resources.units WHERE unit_id = $1 RETURNING *',
             [id]
         );
         if (result.rows.length === 0) {

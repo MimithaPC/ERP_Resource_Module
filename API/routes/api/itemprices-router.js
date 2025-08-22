@@ -14,7 +14,7 @@ router.get("/", async (req, res) => {
     let client;
     try {
         client = await db_pool.connect();
-        const result = await client.query('SELECT * from cerpschema.item_prices');
+        const result = await client.query('SELECT * from resources.item_prices');
         console.log("itemPrices:", result.rows[0]);
         res.json(result.rows);
     } catch (err) {
@@ -31,7 +31,7 @@ router.get("/:aid", async (req, res) => {
     try {
         client = await db_pool.connect();
         const result = await client.query(
-            'SELECT * from cerpschema.item_prices where item_price_id = $1', 
+            'SELECT * from resources.item_prices where item_price_id = $1', 
             [req.params.aid]
         );
         console.log("itemPrices:", result.rows[0]);
@@ -51,7 +51,7 @@ router.post("/", async (req, res) => {
         client = await db_pool.connect();  
         const { price_list_id , item_id , price, created_by, updated_by, created_at, updated_at } = req.body; 
         const result = await client.query(
-            'INSERT INTO cerpschema.item_prices (price_list_id , item_id , price, created_by, updated_by, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+            'INSERT INTO resources.item_prices (price_list_id , item_id , price, created_by, updated_by, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
             [price_list_id , item_id , price, created_by, updated_by, created_at, updated_at]
         );
         const newResource = result.rows[0]; 
@@ -82,7 +82,7 @@ router.put("/:id", async (req, res) => {
         const updated_at = new Date().toISOString();
 
         const result = await client.query(
-            `UPDATE cerpschema.item_prices 
+            `UPDATE resources.item_prices
              SET price_list_id = $1,
                  item_id = $2,
                  price = $3,
@@ -127,7 +127,7 @@ router.delete("/:id", async (req, res) => {
         client = await db_pool.connect();
         const { id } = req.params;
         const result = await client.query(
-            'DELETE FROM cerpschema.item_prices WHERE item_price_id = $1 RETURNING *',
+            'DELETE FROM resources.item_prices WHERE item_price_id = $1 RETURNING *',
             [id]
         );
         if (result.rows.length === 0) {

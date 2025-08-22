@@ -14,7 +14,7 @@ router.get("/", async (req, res) => {
     let client;
     try {
         client = await db_pool.connect();
-        const result = await client.query('SELECT * from cerpschema.unit_conversions');
+        const result = await client.query('SELECT * from resources.unit_conversions');
         console.log("unitConversions:", result.rows[0]);
         res.json(result.rows);
     } catch (err) {
@@ -31,7 +31,7 @@ router.get("/:aid", async (req, res) => {
     try {
         client = await db_pool.connect();
         const result = await client.query(
-            'SELECT * from cerpschema.unit_conversions where conversion_id  = $1', 
+            'SELECT * from resources.unit_conversions where conversion_id  = $1', 
             [req.params.aid]
         );
         console.log("unitConversions:", result.rows[0]);
@@ -51,7 +51,7 @@ router.post("/", async (req, res) => {
         client = await db_pool.connect();  
         const { from_unit_id , to_unit_id, conversion_rate, created_by, updated_by, created_at, updated_at } = req.body; 
         const result = await client.query(
-            'INSERT INTO cerpschema.unit_conversions (from_unit_id , to_unit_id, conversion_rate, created_by, updated_by, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+            'INSERT INTO resources.unit_conversions (from_unit_id , to_unit_id, conversion_rate, created_by, updated_by, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
             [from_unit_id , to_unit_id, conversion_rate, created_by, updated_by, created_at, updated_at]
         );
         const newUnits = result.rows[0]; 
@@ -73,7 +73,7 @@ router.put("/:id", async (req, res) => {
         const { from_unit_id , to_unit_id, conversion_rate, updated_by } = req.body;
         const updated_at = new Date().toISOString(); 
         const result = await client.query(
-            `UPDATE cerpschema.unit_conversions SET from_unit_id = $1, to_unit_id = $2, conversion_rate =$3, updated_by = $4, updated_at = $5 WHERE conversion_id  = $6 RETURNING *`,
+            `UPDATE resources.unit_conversions SET from_unit_id = $1, to_unit_id = $2, conversion_rate =$3, updated_by = $4, updated_at = $5 WHERE conversion_id  = $6 RETURNING *`,
             [ from_unit_id || null, to_unit_id || null, conversion_rate || null, updated_by || null, updated_at, id ]
         );
         if (result.rows.length === 0) {
@@ -96,7 +96,7 @@ router.delete("/:id", async (req, res) => {
         client = await db_pool.connect();
         const { id } = req.params;
         const result = await client.query(
-            'DELETE FROM cerpschema.unit_conversions WHERE conversion_id  = $1 RETURNING *',
+            'DELETE FROM resources.unit_conversions WHERE conversion_id  = $1 RETURNING *',
             [id]
         );
         if (result.rows.length === 0) {
